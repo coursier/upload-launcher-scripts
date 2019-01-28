@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eu
+set -euo pipefail
 
 if [[ ${TRAVIS_TAG} != v* ]]; then
   echo "Not on a git tag"
@@ -15,7 +15,7 @@ $CMD -r sonatype:releases
 
 
 # actual script
-RELEASE_ID="$(curl "https://api.github.com/repos/$REPO/releases?access_token=$GH_TOKEN" | jq -r '.[] | select(.tag_name == "v'"$VERSION"'") | .id')"
+RELEASE_ID="$(curl --fail "https://api.github.com/repos/$REPO/releases?access_token=$GH_TOKEN" | jq -r '.[] | select(.tag_name == "v'"$VERSION"'") | .id')"
 
 if [ "$RELEASE_ID" = "" ]; then
   echo "Error: no release id found" 1>&2
@@ -39,14 +39,14 @@ done
 
 echo "Uploading launcher"
 
-curl \
+curl --fail \
   --data-binary "@$OUTPUT" \
   -H "Content-Type: application/zip" \
   "https://uploads.github.com/repos/$REPO/releases/$RELEASE_ID/assets?name=$NAME&access_token=$GH_TOKEN"
 
 echo "Uploading bat file"
 
-curl \
+curl --fail \
   --data-binary "@$OUTPUT.bat" \
   -H "Content-Type: text/plain" \
   "https://uploads.github.com/repos/$REPO/releases/$RELEASE_ID/assets?name=$NAME.bat&access_token=$GH_TOKEN"

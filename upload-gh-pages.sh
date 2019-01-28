@@ -23,8 +23,8 @@ cd gh-pages
 git config user.name "Travis-CI"
 git config user.email "invalid@travis-ci.com"
 
-curl -Lo "$NAME" "https://github.com/$REPO/releases/download/$TRAVIS_TAG/$NAME"
-curl -Lo "$NAME.bat" "https://github.com/$REPO/releases/download/$TRAVIS_TAG/$NAME.bat"
+curl --fail -Lo "$NAME" "https://github.com/$REPO/releases/download/$TRAVIS_TAG/$NAME"
+curl --fail -Lo "$NAME.bat" "https://github.com/$REPO/releases/download/$TRAVIS_TAG/$NAME.bat"
 
 git add -- "$NAME" "$NAME.bat"
 
