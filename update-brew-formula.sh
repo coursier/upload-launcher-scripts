@@ -27,7 +27,7 @@ URL="https://github.com/$REPO/releases/download/$TRAVIS_TAG/$NAME"
 curl --fail -Lo launcher "$URL"
 
 SHA256="$(openssl dgst -sha256 -binary < launcher | xxd -p -c 256)"
-# rm -f launcher
+rm -f launcher
 
 cat "../../$TEMPLATE" |
   sed 's=@LAUNCHER_VERSION@='"$VERSION"'=g' |
