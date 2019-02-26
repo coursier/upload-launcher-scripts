@@ -8,10 +8,10 @@ fi
 
 export VERSION="$(echo "$TRAVIS_TAG" | sed 's@^v@@')"
 
-# initial check with Sonatype releases
+# initial check with Sonatype staging (releases now redirects to Central)
 mkdir -p target/launcher
 export OUTPUT="target/launcher/$NAME"
-$CMD -r sonatype:releases
+$CMD -r sonatype:staging
 
 
 # actual script
