@@ -39,15 +39,21 @@ done
 
 echo "Uploading launcher"
 
+CONTENT_TYPE="${CONTENT_TYPE:-"application/zip"}"
+
 curl --fail \
   --data-binary "@$OUTPUT" \
-  -H "Content-Type: application/zip" \
+  -H "Content-Type: $CONTENT_TYPE" \
   "https://uploads.github.com/repos/$REPO/releases/$RELEASE_ID/assets?name=$NAME&access_token=$GH_TOKEN"
 
-echo "Uploading bat file"
+HAS_BAT="${HAS_BAT:-true}"
 
-curl --fail \
-  --data-binary "@$OUTPUT.bat" \
-  -H "Content-Type: text/plain" \
-  "https://uploads.github.com/repos/$REPO/releases/$RELEASE_ID/assets?name=$NAME.bat&access_token=$GH_TOKEN"
+if [[ "$HAS_BAT" == true ]]; then
+  echo "Uploading bat file"
+
+  curl --fail \
+    --data-binary "@$OUTPUT.bat" \
+    -H "Content-Type: text/plain" \
+    "https://uploads.github.com/repos/$REPO/releases/$RELEASE_ID/assets?name=$NAME.bat&access_token=$GH_TOKEN"
+fi
 
