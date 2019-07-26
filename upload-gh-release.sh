@@ -16,13 +16,19 @@ if [[ -z "${SIGN:-}" ]]; then
   fi
 fi
 
+
+GPG_OPTS="--batch=true --yes"
+if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+  GPG_OPTS="$GPG_OPTS --pinentry-mode loopback"
+fi
+
 if [[ "$SIGN" == true ]]; then
   echo "Import GPG key"
-  echo "$PGP_SECRET" | base64 --decode | gpg --import
+  echo "$PGP_SECRET" | base64 --decode | gpg $GPG_OPTS --import
 fi
 
 # test run
-gpg --passphrase "$PGP_PASSPHRASE" --armor --yes --output ".travis.yml.asc" --detach-sign ".travis.yml"
+gpg $GPG_OPTS --passphrase "$PGP_PASSPHRASE" --detach-sign --armor --use-agent --output ".travis.yml.asc" ".travis.yml"
 
 # initial check with Sonatype staging (releases now redirects to Central)
 mkdir -p target/launcher
@@ -63,7 +69,7 @@ curl --fail \
   "https://uploads.github.com/repos/$REPO/releases/$RELEASE_ID/assets?name=$NAME&access_token=$GH_TOKEN"
 
 if [[ "$SIGN" == true ]]; then
-  gpg --passphrase "$PGP_PASSPHRASE" --armor --yes --output "$OUTPUT.asc" --detach-sign "$OUTPUT"
+  gpg $GPG_OPTS --passphrase "$PGP_PASSPHRASE" --detach-sign --armor --use-agent --output "$OUTPUT.asc" "$OUTPUT"
   curl --fail \
     --data-binary "@$OUTPUT.asc" \
     -H "Content-Type: text/plain" \
@@ -81,7 +87,7 @@ if [[ "$HAS_BAT" == true ]]; then
     "https://uploads.github.com/repos/$REPO/releases/$RELEASE_ID/assets?name=$NAME.bat&access_token=$GH_TOKEN"
 
   if [[ "$SIGN" == true ]]; then
-    gpg --passphrase "$PGP_PASSPHRASE" --armor --yes --output "$OUTPUT.bat.asc" --detach-sign "$OUTPUT.bat"
+    gpg $GPG_OPTS --passphrase "$PGP_PASSPHRASE" --detach-sign --armor --use-agent --output "$OUTPUT.bat.asc" "$OUTPUT.bat"
     curl --fail \
       --data-binary "@$OUTPUT.bat.asc" \
       -H "Content-Type: text/plain" \
