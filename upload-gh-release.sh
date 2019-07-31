@@ -25,10 +25,10 @@ fi
 if [[ "$SIGN" == true ]]; then
   echo "Import GPG key"
   echo "$PGP_SECRET" | base64 --decode | gpg $GPG_OPTS --import
-fi
 
-# test run
-gpg $GPG_OPTS --passphrase "$PGP_PASSPHRASE" --detach-sign --armor --use-agent --output ".travis.yml.asc" ".travis.yml"
+  # test run
+  gpg $GPG_OPTS --passphrase "$PGP_PASSPHRASE" --detach-sign --armor --use-agent --output ".travis.yml.asc" ".travis.yml"
+fi
 
 # initial check with Sonatype staging (releases now redirects to Central)
 mkdir -p target/launcher
