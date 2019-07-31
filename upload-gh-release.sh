@@ -33,7 +33,7 @@ gpg $GPG_OPTS --passphrase "$PGP_PASSPHRASE" --detach-sign --armor --use-agent -
 # initial check with Sonatype staging (releases now redirects to Central)
 mkdir -p target/launcher
 export OUTPUT="target/launcher/$NAME"
-TEST_RUN=true $CMD -r sonatype:staging
+TEST_RUN=true /bin/bash -c "$CMD -r sonatype:staging"
 
 
 # actual script
@@ -48,7 +48,7 @@ echo "Release ID is $RELEASE_ID"
 
 # wait for sync to Maven Central
 ATTEMPT=0
-while ! $CMD; do
+while ! /bin/bash -c "$CMD"; do
   if [ "$ATTEMPT" -ge 25 ]; then
     echo "Not synced to Maven Central after $ATTEMPT minutes, exiting"
     exit 1
