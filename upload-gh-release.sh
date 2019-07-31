@@ -18,7 +18,7 @@ fi
 
 
 GPG_OPTS="--batch=true --yes"
-if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+if [[ "$TRAVIS_OS_NAME" == "osx" || "$TRAVIS_OS_NAME" == "windows" ]]; then
   GPG_OPTS="$GPG_OPTS --pinentry-mode loopback"
 fi
 
