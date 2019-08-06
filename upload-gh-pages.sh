@@ -16,17 +16,20 @@ if [ -d gh-pages ]; then
   rm -rf gh-pages
 fi
 
+LAUNCHER_BRANCH="${LAUNCHER_BRANCH:-"gh-pages"}"
+LAUNCHER_REPO="${LAUNCHER_REPO:-"$REPO"}"
+
 echo "Cloning"
-git clone "https://${GH_TOKEN}@github.com/$REPO.git" -q -b gh-pages gh-pages
+git clone "https://${GH_TOKEN}@github.com/$LAUNCHER_REPO.git" -q -b "$LAUNCHER_BRANCH" gh-pages
 cd gh-pages
 
 git config user.name "Travis-CI"
 git config user.email "invalid@travis-ci.com"
 
-curl --fail -Lo "$NAME" "https://github.com/$REPO/releases/download/$TRAVIS_TAG/$NAME"
-curl --fail -Lo "$NAME.bat" "https://github.com/$REPO/releases/download/$TRAVIS_TAG/$NAME.bat"
-
-git add -- "$NAME" "$NAME.bat"
+for n in $NAME; do
+  curl --fail -Lo "$n" "https://github.com/$REPO/releases/download/$TRAVIS_TAG/$n"
+  git add -- "$n"
+done
 
 MSG="Add $VERSION launcher"
 
@@ -37,5 +40,5 @@ else
   git commit -m "$MSG"
 
   echo "Pushing changes"
-  git push origin gh-pages
+  git push origin "$LAUNCHER_BRANCH"
 fi
