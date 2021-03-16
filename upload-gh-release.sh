@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ ${TRAVIS_TAG} != v* ]]; then
+TAG="$(git describe --exact-match --tags --always "$(git rev-parse HEAD)")"
+
+if [[ ${TAG} != v* ]]; then
   echo "Not on a git tag"
   exit 1
 fi
 
-export VERSION="$(echo "$TRAVIS_TAG" | sed 's@^v@@')"
+export VERSION="$(echo "$TAG" | sed 's@^v@@')"
 
 if [[ -z "${SIGN:-}" ]]; then
   if [[ -z "${PGP_SECRET:-}" ]]; then
@@ -17,9 +19,10 @@ if [[ -z "${SIGN:-}" ]]; then
 fi
 
 
-GPG_OPTS="--batch=true --yes"
-if [[ "$TRAVIS_OS_NAME" == "osx" || "$TRAVIS_OS_NAME" == "windows" ]]; then
-  GPG_OPTS="$GPG_OPTS --pinentry-mode loopback"
+if [ "$(expr substr $(uname -s) 1 5 2>/dev/null)" == "Linux" ]; then
+  GPG_OPTS="--batch=true --yes"
+else
+  GPG_OPTS="--batch=true --yes --pinentry-mode loopback"
 fi
 
 if [[ "$SIGN" == true ]]; then
